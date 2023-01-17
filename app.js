@@ -63,6 +63,27 @@ app.get('/mode', (req, res, next) => {
     }
 })
 
+app.get('/all', (req, res, next) => {
+    try {
+        if (!req.query.nums || req.query.nums === '') {throw new ExpressError('Nums are required', 400)}
+        let arr = req.query.nums.split(',');
+        let newArr = [];
+        for (let i = 0; i < arr.length; i++){
+            if (isNaN(parseInt(arr[i]))) {throw new ExpressError(`${arr[i]} is not a number`, 400)}
+            newArr.push(parseInt(arr[i]));
+        } 
+        return res.json({response: {
+            operation: 'all',
+            mean: getMean(newArr),
+            median: getMedian(newArr),
+            mode: getMode(newArr)
+        }
+        })
+    } catch (e) {
+        next(e)
+    }
+})
+
 app.use((req,res,next) => {
     const e = new ExpressError("Page Not Found!", 404);
     next(e)
